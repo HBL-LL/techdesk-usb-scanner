@@ -1,4 +1,4 @@
-﻿SCANNER USB TECHDESK
+SCANNER USB TECHDESK
 ====================
 
 Branchez la clé sur un laptop qui vient d'arriver : il est ajouté au stock TechDesk avec ses
@@ -53,8 +53,8 @@ CE QUE VOUS VOYEZ
 
 FICHE TECHNIQUE COMPLÈTE
 ------------------------
-Le dossier fiche-technique relève toutes les caractéristiques du laptop : nom, écran (taille, résolution,
-OLED ou non), processeur, carte graphique, RAM, stockage, batterie (santé en % et nombre de cycles).
+Le dossier fiche-technique relève toutes les caractéristiques du laptop : nom, couleur, écran (taille,
+résolution, OLED ou non), processeur, carte graphique, RAM, stockage, batterie (santé en % et nombre de cycles).
 Il les envoie à TechDesk, qui les affiche sur le produit (Produits > l'œil > Fiche technique). L'écran
 et la batterie s'impriment aussi sous le laptop sur la facture et le reçu.
 Il les note aussi dans fiche-technique\journal-des-scans.csv sur la clé (une ligne par laptop, s'ouvre dans

@@ -19,6 +19,43 @@ SERIAL="$(field 'Serial Number (system)' "$HW")"
 PRODUCT="$(ioreg -rd1 -c IOPlatformDevice 2>/dev/null | sed -n 's/.*"product-name" = <"\(.*\)">.*/\1/p' | head -n 1)"
 NAME="${PRODUCT:-$MODEL ($IDENT)}"
 
+# ---- Couleur du boîtier ----
+COLOR=""
+# 1. Correspondance par référence commerciale Apple (les 5 premiers caractères)
+case "${REF:0:5}" in
+  MW2U3|MW2V3|MW2W3|MX2E3|MX2H3|MR7J3|MR7K3|MRXW3|MRXX3|MRXY3|MREF3|MREG3|MLXY3|MLY03|MQKU3|MQKV3|MGN73|MGNA3|MYD92|MYDC2|MNEP3|MNEQ3|MKGR3|MKGT3|MK1E3|MK1F3|MPHH3|MPHJ3|MNWA3|MNWC3) COLOR='Argent' ;;
+  MCX04|MCX14|MX2F3|MX2G3|MX2J3|MRX33|MRX43|MRX53|MRX63|MRX73|MRX83) COLOR='Noir sidéral' ;;
+  MTL73|MTL83|MRXN3|MRXP3|MRXQ3|MRE83|MREA3|MLXW3|MLXX3|MQKP3|MQKR3|MGN63|MGN93|MYD82|MYDA2|MNEH3|MNEJ3|MKGP3|MKGQ3|MK183|MK193|MPHE3|MPHF3|MNW83|MNW93) COLOR='Gris sidéral' ;;
+  MRXT3|MRXU3|MRXV3|MRED3|MREE3|MLY13|MLY23|MQKW3|MQKX3) COLOR='Lumière stellaire' ;;
+  MXCV3|MXCU3|MXCT3|MRE93|MREC3|MLY33|MLY43|MQKQ3|MQKT3) COLOR='Minuit' ;;
+  MGND3|MGNE3) COLOR='Or' ;;
+esac
+# 2. Identifiant matériel de couleur (housing-color dans l'arbre matériel des Mac Apple Silicon)
+if [ -z "$COLOR" ]; then
+  HEX="$(ioreg -p IODeviceTree -n chosen -l 2>/dev/null | sed -n 's/.*"housing-color" = <\([0-9a-fA-F]*\).*/\1/p')"
+  CODE="$(printf '%d' "0x${HEX:0:2}" 2>/dev/null)"
+  if [ -n "$CODE" ] && [ "$CODE" -gt 0 ]; then
+    case "$CODE" in
+      1) COLOR='Argent' ;;
+      2) case "$NAME" in *"M3 Pro"*|*"M3 Max"*|*"M4"*) COLOR='Noir sidéral' ;; *) COLOR='Gris sidéral' ;; esac ;;
+      3) COLOR='Or' ;;
+      4) COLOR='Or rose' ;;
+      5) COLOR='Minuit' ;;
+      6) COLOR='Lumière stellaire' ;;
+      7) COLOR='Bleu' ;;
+      8) COLOR='Vert' ;;
+      9) COLOR='Rose' ;;
+      10) COLOR='Jaune' ;;
+      11) COLOR='Orange' ;;
+      12) COLOR='Violet' ;;
+    esac
+  fi
+fi
+# 3. Ancien Mac unibody en aluminium (antérieur à 2016)
+if [ -z "$COLOR" ] && echo "$MODEL" | grep -q 'MacBook' && ! echo "$HW" | grep -q 'Thunderbolt 3\|USB-C'; then
+  COLOR='Argent'
+fi
+
 # ---- Écran intégré ----
 # Taille mesurée par macOS (en mm), arrondie à la taille vendue par Apple
 INCHES="$(osascript -l JavaScript -e 'ObjC.import("AppKit"); var d = 0, s = $.NSScreen.screens;
@@ -102,6 +139,7 @@ echo "  Fiche technique :"
 echo "    Nom          : $NAME"
 echo "    Référence    : ${REF:-$IDENT}"
 echo "    N° de série  : $SERIAL"
+[ -n "$COLOR" ] && echo "    Couleur      : $COLOR"
 echo "    Écran        : ${SCREEN:-?}  -  ${RES:-?}  -  $PANEL"
 echo "    Processeur   : $CPU"
 echo "    Graphique    : ${GPU:-?}"
@@ -113,11 +151,11 @@ echo "    Batterie     : ${BATTERY:-pas de batterie}${CYCLES:+  -  $CYCLES cycle
 csv() { local out="" v; for v in "$@"; do v="${v//\"/\"\"}"; out="$out${out:+;}\"$v\""; done; printf '%s\r\n' "$out"; }
 if [ ! -f "$LOG" ]; then
   { printf '\xEF\xBB\xBF'
-    csv 'Date' 'Système' 'Nom' 'Référence' 'N° de série' 'Écran' 'Résolution' "Type d'écran" 'Dalle' \
+    csv 'Date' 'Système' 'Nom' 'Référence' 'N° de série' 'Couleur' 'Écran' 'Résolution' "Type d'écran" 'Dalle' \
         'Processeur' 'Carte graphique' 'RAM' 'Stockage' 'Batterie (santé)' 'Cycles batterie'; } > "$LOG"
 fi
 FAILED=0
-if csv "$(date '+%Y-%m-%d %H:%M')" 'Mac' "$NAME" "${REF:-$IDENT}" "$SERIAL" "$SCREEN" "$RES" "$PANEL" '' \
+if csv "$(date '+%Y-%m-%d %H:%M')" 'Mac' "$NAME" "${REF:-$IDENT}" "$SERIAL" "$COLOR" "$SCREEN" "$RES" "$PANEL" '' \
     "$CPU" "$GPU" "$RAM" "$STORAGE" "$BATTERY" "$CYCLES" >> "$LOG"; then
   echo
   echo "  ENREGISTRÉ dans fiche-technique/journal-des-scans.csv"
@@ -142,8 +180,8 @@ if [ -z "$SERIAL" ]; then
   echo "  Pas de numéro de série : la fiche n'est pas envoyée à TechDesk (elle est seulement dans le journal)."
 else
   FILE="$PENDING/$(printf '%s' "$SERIAL" | tr -cd 'A-Za-z0-9_-')-$(date +%Y%m%d-%H%M%S)-$$.json"
-  printf '{"os":"mac","serialNumber":"%s","name":"%s","reference":"%s","screen":"%s","resolution":"%s","screenType":"%s","panel":"","cpu":"%s","gpu":"%s","ram":"%s","storage":"%s","battery":"%s","batteryCycles":"%s"}\n' \
-    "$(json "$SERIAL")" "$(json "$NAME")" "$(json "${REF:-$IDENT}")" "$(json "$SCREEN")" "$(json "$RES")" "$(json "$PANEL")" \
+  printf '{"os":"mac","serialNumber":"%s","name":"%s","reference":"%s","color":"%s","screen":"%s","resolution":"%s","screenType":"%s","panel":"","cpu":"%s","gpu":"%s","ram":"%s","storage":"%s","battery":"%s","batteryCycles":"%s"}\n' \
+    "$(json "$SERIAL")" "$(json "$NAME")" "$(json "${REF:-$IDENT}")" "$(json "$COLOR")" "$(json "$SCREEN")" "$(json "$RES")" "$(json "$PANEL")" \
     "$(json "$CPU")" "$(json "$GPU")" "$(json "$RAM")" "$(json "$STORAGE")" "$(json "$BATTERY")" "$(json "$CYCLES")" > "$FILE"
 fi
 

@@ -14,6 +14,7 @@ Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MO
 
 - ⚡ **Instant Stock Intake (`SCAN-*`)**: Reads manufacturer, model, CPU, RAM, storage, GPU, and BIOS/system serial number. Sends the laptop directly to `POST /api/v1/products/scan`. TechDesk normalizes the product name and configuration into the shop's standard format, flagged as **Prix manquant** until pricing is confirmed.
 - 📋 **Complete Technical Sheet (`FICHE-*`)**: Deep hardware inspection:
+  - **Chassis Color**: Physical housing finish (e.g. `Argent`, `Noir sidéral`, `Gris sidéral`, `Minuit`, `Lumière stellaire`, `Noir`, `Gris`).
   - **Display**: Screen diagonal (calculated from panel mm/EDID, rounded to commercial sizes), native resolution, maximum refresh rate, panel technology (`OLED`, `Liquid Retina XDR`, `mini-LED`, `LCD`), and raw panel model code.
   - **Processor & GPU**: Core layout (performance vs. efficiency cores), dedicated/integrated GPUs, VRAM.
   - **Memory & Storage**: Unified memory / RAM type and speed, internal NVMe/SSD drive capacity.
@@ -122,6 +123,7 @@ The `fiche-technique` tool extracts comprehensive hardware telemetry and sends i
 |---|---|---|
 | **Product Name & SKU** | System manufacturer + normalized model / Lenovo Type Code | Marketing name (`MacBook Pro (14-inch, Nov 2024)`), Apple model number |
 | **Serial Number** | BIOS serial number (`Win32_BIOS`) | Hardware system serial number (`SPHardwareDataType`) |
+| **Couleur (Color)** | WMI model / SKU pattern matching (e.g. Noir, Gris, Argent, Bleu) | Decoded from IOKit device tree `housing-color` (Argent, Noir sidéral, Gris sidéral, Minuit, Lumière stellaire) + Apple part number catalog |
 | **Display Size & Res** | Decoded from EDID Detailed Timing Descriptor (mm converted to diagonal inches) | Measured physical dimensions via `AppKit` / `NSScreen`, matched to Apple diagonal standards |
 | **Panel Technology** | Evaluates EDID descriptor strings and CTA-861 HDR black-level luminance (`OLED`, `OLED (probable)`, or `LCD`) | `Liquid Retina XDR (mini-LED)`, `Liquid Retina (LCD)`, or `Retina (LCD)` |
 | **Processor** | CPU name, physical core and thread count | Apple Silicon / Intel chip designation with performance + efficiency breakdown |

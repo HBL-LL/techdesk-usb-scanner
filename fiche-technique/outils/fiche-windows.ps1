@@ -45,6 +45,23 @@ if ($maker -eq 'Lenovo' -and $version) {
 }
 $serial = "$($bios.SerialNumber)".Trim()
 
+# ---- Couleur du boîtier ----
+$color = ''
+$rawChassis = "$($cs.Model) $($csp.Version) $($cs.SystemSKUNumber)"
+switch -regex ($rawChassis) {
+    '(?i)\b(space\s*black|noir\s*sid[eé]ral)\b' { $color = 'Noir sidéral'; break }
+    '(?i)\b(space\s*gr[ae]y|gris\s*sid[eé]ral)\b' { $color = 'Gris sidéral'; break }
+    '(?i)\b(midnight|minuit)\b' { $color = 'Minuit'; break }
+    '(?i)\b(starlight|lumi[eè]re\s*stellaire)\b' { $color = 'Lumière stellaire'; break }
+    '(?i)\b(eclipse\s*black|graphite\s*black|villi\s*black|black|noir)\b' { $color = 'Noir'; break }
+    '(?i)\b(storm\s*gr[ae]y|luna\s*gr[ae]y|arctic\s*gr[ae]y|cloud\s*gr[ae]y|slate\s*gr[ae]y|iron\s*gr[ae]y|gr[ae]y|gris)\b' { $color = 'Gris'; break }
+    '(?i)\b(platinum\s*silver|natural\s*silver|silver|argent)\b' { $color = 'Argent'; break }
+    '(?i)\b(gold|champagne|or)\b' { $color = 'Or'; break }
+    '(?i)\b(rose\s*gold|or\s*rose)\b' { $color = 'Or rose'; break }
+    '(?i)\b(blue|bleu)\b' { $color = 'Bleu'; break }
+    '(?i)\b(white|blanc)\b' { $color = 'Blanc'; break }
+}
+
 # ---- Écran intégré (lu dans son EDID) ----
 $screen = ''; $res = ''; $hz = 0; $panel = 'LCD'; $panelId = ''
 $monitors = @(Safe { Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorConnectionParams })
@@ -185,6 +202,7 @@ Write-Host '  Fiche technique :' -ForegroundColor Cyan
 Write-Host "    Nom          : $name"
 Write-Host "    Référence    : $ref"
 Write-Host "    N° de série  : $serial"
+if ($color) { Write-Host "    Couleur      : $color" }
 Write-Host "    Écran        : $shownScreen"
 if ($panelId) { Write-Host "    Dalle        : $panelId" }
 Write-Host "    Processeur   : $cpu"
@@ -198,11 +216,11 @@ $failed = 0
 function Csv($values) { (@($values | ForEach-Object { '"' + ("$_" -replace '"', '""') + '"' }) -join ';') + "`r`n" }
 try {
     if (-not (Test-Path $log)) {
-        $header = Csv @('Date', 'Système', 'Nom', 'Référence', 'N° de série', 'Écran', 'Résolution', "Type d'écran", 'Dalle',
+        $header = Csv @('Date', 'Système', 'Nom', 'Référence', 'N° de série', 'Couleur', 'Écran', 'Résolution', "Type d'écran", 'Dalle',
             'Processeur', 'Carte graphique', 'RAM', 'Stockage', 'Batterie (santé)', 'Cycles batterie')
         [IO.File]::WriteAllText($log, $header, (New-Object Text.UTF8Encoding $true))
     }
-    $line = Csv @((Get-Date -Format 'yyyy-MM-dd HH:mm'), 'Windows', $name, $ref, $serial, $screen, $res, $panel, $panelId,
+    $line = Csv @((Get-Date -Format 'yyyy-MM-dd HH:mm'), 'Windows', $name, $ref, $serial, $color, $screen, $res, $panel, $panelId,
         $cpu, $gpu, $ram, $storage, $battery, $cycles)
     [IO.File]::AppendAllText($log, $line, (New-Object Text.UTF8Encoding $false))
     Write-Host ''
@@ -230,7 +248,7 @@ if (-not $serial) {
     Write-Host "  Pas de numéro de série : la fiche n'est pas envoyée à TechDesk (elle est seulement dans le journal)." -ForegroundColor Yellow
 } else {
     $fiche = [ordered]@{
-        os = 'windows'; serialNumber = $serial; name = $name; reference = $ref
+        os = 'windows'; serialNumber = $serial; name = $name; reference = $ref; color = $color
         screen = $screen; resolution = $res; screenType = $panel; panel = $panelId
         cpu = $cpu; gpu = $gpu; ram = $ram; storage = $storage; battery = $battery; batteryCycles = "$cycles"
     }
