@@ -15,7 +15,7 @@ Instructions for the shop (in French) are in [LISEZ-MOI.txt](LISEZ-MOI.txt), whi
    - Mac: Disk Utility → select the stick → **Erase** → Format **ExFAT**.
    - Windows: right-click the stick in Explorer → **Format** → File system **exFAT**.
 2. Copy everything in this folder onto the stick (`SCAN-WINDOWS.cmd`, `SCAN-MAC.command`, `settings.txt`,
-   `LISEZ-MOI.txt` and the `scanner` folder). You don't need `README.md` or the `.git*` files.
+   `LISEZ-MOI.txt`, the `scanner` folder and the `fiche-technique` folder). You don't need `README.md` or the `.git*` files.
 3. In TechDesk: **Settings → API**.
    - Tick **USB scanner (adds laptops only)**.
    - Name the key, e.g. `Clé USB`, and click **Create key**.
@@ -66,6 +66,34 @@ Open **Products** and click the **Missing price** filter. For each scanned lapto
 
 The red badge disappears once both prices are set.
 
+### 6. Add the fiche technique (full specs)
+
+The `fiche-technique` folder is a second tool. It reads the laptop's full specs and sends them to TechDesk
+(`POST /api/v1/products/specs`), which keeps them by manufacturer serial number and shows them on the product with
+that serial number: **Products → eye icon → Fiche technique**. Factures and reçus print the screen and battery
+under the laptop. It also adds one line to `fiche-technique/journal-des-scans.csv` on the stick (opens in Excel or
+Numbers).
+
+Run it on the same laptop, before or after the TechDesk scan: a fiche sent first shows up once the laptop is scanned
+into stock. Running it again on the same laptop replaces its fiche (battery health changes). Without internet the fiche
+waits in `scans/fiches-en-attente/` and is sent by the next fiche that has a connection. The same **USB scanner** key
+is used; it adds fiches but still cannot read stock.
+
+- Windows: double-click `fiche-technique\FICHE-WINDOWS.cmd`. On the setup screen, type `D:\fiche-technique\FICHE-WINDOWS.cmd`
+  in the Shift+F10 window (or `E:\…`, `F:\…`).
+- Mac: double-click `fiche-technique/FICHE-MAC.command` (right-click → Open the first time).
+
+| Column | Windows | Mac |
+|---|---|---|
+| Nom, Référence, N° de série | Maker + model (Lenovo: the `Version` name), SKU or Lenovo type code, BIOS serial | Marketing name (`MacBook Pro (14-inch, Nov 2024)`), model number, serial |
+| Écran, Résolution | Diagonal from the panel's EDID (mm), rounded to the nearest sold size; native resolution and highest refresh rate | Diagonal measured by macOS, rounded to Apple's sizes; resolution and refresh rate |
+| Type d'écran, Dalle | `OLED` when the EDID names an OLED/Samsung ATNA panel, `OLED (probable)` when the panel advertises a near-zero HDR black level, else `LCD`. `Dalle` is the panel maker + part number, to check by search | `Liquid Retina XDR (mini-LED)`, `Liquid Retina (LCD)`, `Retina (LCD)` |
+| Processeur | Name, cores / threads | Chip, cores (performance + efficiency) |
+| Carte graphique | Every video adapter (only `Microsoft Basic Display Adapter` on the setup screen if drivers aren't installed yet) | GPU and its cores |
+| RAM | Total, type and speed | Total and type |
+| Stockage | Every internal disk: size, SSD/HDD, NVMe | Size rounded to Apple's sizes, SSD |
+| Batterie (santé), Cycles batterie | Full charge ÷ design capacity, from `powercfg /batteryreport` (WMI as fallback); cycle count | `Maximum Capacity` and condition; cycle count |
+
 ### If the stick is lost
 
 TechDesk → **Settings → API** → **Revoke** on the stick's key. The key stops working immediately. It could only
@@ -77,6 +105,8 @@ add laptops: it can't read your stock, prices or suppliers, and it can't sell.
 |---|---|
 | `SCAN-WINDOWS.cmd` → `scanner/scan-windows.ps1` | Reads the laptop with Windows PowerShell 5.1 (CIM): maker, model, CPU, RAM, internal disk, GPUs, BIOS serial number. Runs after Windows setup, or on the setup screen via Shift+F10. |
 | `SCAN-MAC.command` → `scanner/scan-mac.sh` | Reads the Mac with built-in tools only (`system_profiler`, `sysctl`, `diskutil`, `plutil`, `curl`): model, chip, RAM, disk, native screen resolution, serial number. |
+| `fiche-technique/FICHE-WINDOWS.cmd` → `outils/fiche-windows.ps1`, `fiche-technique/FICHE-MAC.command` → `outils/fiche-mac.sh` | Fiche technique: sends the full specs to TechDesk (`POST /api/v1/products/specs`) and writes them to `fiche-technique/journal-des-scans.csv` (`;`-separated, UTF-8 with BOM for Excel). |
+| `scans/fiches-en-attente/`, `scans/fiches-envoyees/` | Same queue for fiches: written to `fiches-en-attente`, moved to `fiches-envoyees` once TechDesk accepts it. |
 | `settings.txt` | `TECHDESK_URL` and `API_KEY` (a TechDesk **USB scanner** key, `smk_…`). |
 | `scans/en-attente/`, `scans/envoyes/` | Each scan is written to `en-attente` first, then moved to `envoyes` once TechDesk accepts it. Scans made without internet are sent by the next scan that has a connection, from either OS. |
 
@@ -96,6 +126,7 @@ the same serial number twice. See `PRODUCT_API.md` in the TechDesk-ERP repo.
 
 ## Notes for editing
 
+- Same rules for `fiche-windows.ps1` and `fiche-mac.sh`.
 - Keep `scan-windows.ps1` compatible with **Windows PowerShell 5.1** (no `??`, no ternary) and saved as
   **UTF-8 with BOM + CRLF**, or accented messages break. `.gitattributes` keeps the line endings.
 - Keep `scan-mac.sh` compatible with macOS's **bash 3.2** and free of Python or Homebrew tools.

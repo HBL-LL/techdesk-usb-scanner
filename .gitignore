@@ -1,2 +1,4 @@
-# Scans made while testing
+# Scans and spec logs made while testing
 scans/
+fiche-technique/journal-des-scans.csv
+.DS_Store

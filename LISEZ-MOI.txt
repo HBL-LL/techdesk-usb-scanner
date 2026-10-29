@@ -51,6 +51,25 @@ CE QUE VOUS VOYEZ
 "TechDesk refuse la clé"  : vérifiez API_KEY dans settings.txt.
 
 
+FICHE TECHNIQUE COMPLÈTE
+------------------------
+Le dossier fiche-technique relève toutes les caractéristiques du laptop : nom, écran (taille, résolution,
+OLED ou non), processeur, carte graphique, RAM, stockage, batterie (santé en % et nombre de cycles).
+Il les envoie à TechDesk, qui les affiche sur le produit (Produits > l'œil > Fiche technique). L'écran
+et la batterie s'impriment aussi sous le laptop sur la facture et le reçu.
+Il les note aussi dans fiche-technique\journal-des-scans.csv sur la clé (une ligne par laptop, s'ouvre dans
+Excel ou Numbers).
+   Windows : double-cliquez fiche-technique\FICHE-WINDOWS.cmd
+             (écran d'installation : Maj + F10 puis tapez  D:\fiche-technique\FICHE-WINDOWS.cmd )
+   Mac     : double-cliquez fiche-technique/FICHE-MAC.command
+Avant ou après le SCAN, peu importe : la fiche va sur le produit qui a le même numéro de série.
+Refaire la FICHE sur le même laptop remplace l'ancienne (par exemple pour la batterie).
+"FICHE AJOUTÉE"       : c'est fait, elle est sur le produit.
+"FICHE ENREGISTRÉE"   : ce laptop n'est pas encore en stock. Lancez le SCAN, la fiche s'y affichera.
+"Pas de connexion"    : la fiche est gardée sur la clé (scans\fiches-en-attente) et partira au prochain envoi.
+"OLED (probable)" : à vérifier en cherchant la référence de la colonne "Dalle" sur internet.
+
+
 SI LA CLÉ EST PERDUE
 --------------------
 Dans TechDesk : Paramètres > API > "Révoquer" sur la clé USB. Elle ne marche plus immédiatement.
