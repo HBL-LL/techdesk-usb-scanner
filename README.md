@@ -1,4 +1,4 @@
-# LaptopLand USB scanner
+# TechDesk USB scanner
 
 A USB stick that adds a newly arrived laptop to the TechDesk ERP stock. Plug it into a Windows laptop or a
 MacBook, double-click one file, and the laptop appears in TechDesk with its name, configuration and serial

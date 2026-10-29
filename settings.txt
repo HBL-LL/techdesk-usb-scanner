@@ -1,4 +1,4 @@
-# Réglages du scanner USB LaptopLand
+# Réglages du scanner USB TechDesk
 # Adresse de TechDesk, sans "/" à la fin (la même que dans votre navigateur)
 TECHDESK_URL=https://techdesk.example.com
 # Clé "Scanner USB" créée dans TechDesk > Paramètres > API (elle commence par smk_)

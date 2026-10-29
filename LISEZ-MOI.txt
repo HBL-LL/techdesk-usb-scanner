@@ -1,5 +1,5 @@
-﻿SCANNER USB LAPTOPLAND
-======================
+﻿SCANNER USB TECHDESK
+====================
 
 Branchez la clé sur un laptop qui vient d'arriver : il est ajouté au stock TechDesk avec ses
 caractéristiques écrites comme d'habitude (ex. "ThinkPad X1 Carbon Gen 12" / "Ultra 7 1re | 32Go | 1To",
