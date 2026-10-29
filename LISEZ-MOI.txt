@@ -1,0 +1,57 @@
+﻿SCANNER USB LAPTOPLAND
+======================
+
+Branchez la clé sur un laptop qui vient d'arriver : il est ajouté au stock TechDesk avec ses
+caractéristiques écrites comme d'habitude (ex. "ThinkPad X1 Carbon Gen 12" / "Ultra 7 1re | 32Go | 1To",
+ou "MacBook Pro 14"" / "M4 Pro - 24 Go RAM - 512 Go").
+Les prix d'achat et de vente restent vides, l'état aussi, et le fournisseur est "À définir".
+Dans TechDesk, ces laptops sont marqués en rouge "Prix manquant" jusqu'à ce que vous mettiez les prix.
+
+
+PRÉPARER LA CLÉ (une seule fois)
+--------------------------------
+1. Formatez la clé en "exFAT" (elle marche alors sur Windows et sur Mac).
+2. Copiez tout le contenu de ce dossier sur la clé.
+3. Dans TechDesk : Paramètres > API > cochez "Scanner USB (ajoute seulement des laptops)",
+   nommez la clé "Clé USB", cliquez "Créer une clé" et copiez la clé (smk_...).
+4. Sur la clé, ouvrez settings.txt et remplissez :
+      TECHDESK_URL=  l'adresse de TechDesk (celle de votre navigateur, sans "/" à la fin)
+      API_KEY=       la clé copiée
+   Enregistrez.
+
+
+SUR UN LAPTOP WINDOWS
+---------------------
+A) Laptop neuf, encore sur l'écran d'installation de Windows (choix du pays, du Wi-Fi...) :
+   1. Branchez la clé.
+   2. Appuyez sur Maj + F10 (sur certains laptops : Maj + Fn + F10). Une fenêtre noire s'ouvre.
+   3. Tapez   D:\SCAN-WINDOWS.cmd   puis Entrée.
+      Si "introuvable", essayez E:\SCAN-WINDOWS.cmd puis F:\SCAN-WINDOWS.cmd.
+   4. Lisez le résultat, appuyez sur une touche, fermez la fenêtre. Le laptop reste neuf.
+   Astuce : connectez le Wi-Fi sur l'écran d'installation avant, sinon le scan part plus tard (voir plus bas).
+
+B) Windows déjà installé :
+   Ouvrez la clé et double-cliquez SCAN-WINDOWS.cmd.
+
+
+SUR UN MAC
+----------
+Le Mac doit avoir fini son installation (l'écran d'accueil "Bonjour" ne permet pas de lancer le scan).
+   1. Branchez la clé et ouvrez-la dans le Finder.
+   2. Double-cliquez SCAN-MAC.command.
+      Si le Mac dit qu'il ne peut pas l'ouvrir : clic droit > Ouvrir > Ouvrir.
+
+
+CE QUE VOUS VOYEZ
+-----------------
+"AJOUTÉ AU STOCK"         : c'est fait, le Bar ID est affiché.
+"DÉJÀ EN STOCK"           : ce laptop (même numéro de série) était déjà là, il n'est pas ajouté deux fois.
+"Pas de connexion"        : pas d'internet. Le scan est gardé sur la clé (dossier scans\en-attente)
+                            et partira tout seul au prochain scan fait avec internet, sur n'importe quel laptop.
+"TechDesk refuse la clé"  : vérifiez API_KEY dans settings.txt.
+
+
+SI LA CLÉ EST PERDUE
+--------------------
+Dans TechDesk : Paramètres > API > "Révoquer" sur la clé USB. Elle ne marche plus immédiatement.
+Cette clé ne peut ni voir le stock ni vendre : elle peut seulement ajouter des laptops.
