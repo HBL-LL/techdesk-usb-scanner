@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Platform: Windows & macOS](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS-blue?style=flat-square)](README.md)
 
-A plug-and-play USB utility that automates laptop intake and hardware inventory for **TechDesk ERP**. Plug the stick into any incoming laptop (Windows or Mac), run one command, and the laptop is instantly identified, configured, and registered in stock or documented with a detailed technical sheet (*fiche technique*).
+A plug-and-play USB utility that automates laptop intake and hardware inventory for **TechDesk ERP**. Plug the stick into any incoming laptop (Windows or Mac), double-click one file, and in a **single 1-click run** the laptop is added to stock, enriched with its complete technical sheet (*fiche technique*: color, display, OLED, battery health), and logged in the USB CSV journal.
 
 Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MOI.txt) at the root of the stick.
 
@@ -12,8 +12,9 @@ Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MO
 
 ## Features
 
-- ⚡ **Instant Stock Intake (`SCAN-*`)**: Reads manufacturer, model, CPU, RAM, storage, GPU, and BIOS/system serial number. Sends the laptop directly to `POST /api/v1/products/scan`. TechDesk normalizes the product name and configuration into the shop's standard format, flagged as **Prix manquant** until pricing is confirmed.
-- 📋 **Complete Technical Sheet (`FICHE-*`)**: Deep hardware inspection:
+- ⚡ **1-Click All-in-One Execution (`SCAN-*`)**: Run `SCAN-MAC.command` (macOS) or `SCAN-WINDOWS.cmd` (Windows). In a single automated pass, it performs both stock intake and full hardware telemetry logging.
+- 📦 **Instant Stock Intake**: Reads manufacturer, model, CPU, RAM, storage, GPU, and BIOS/system serial number. Sends the laptop directly to `POST /api/v1/products/scan`. TechDesk normalizes the product name and configuration into the shop's standard format, flagged as **Prix manquant** until pricing is confirmed.
+- 📋 **Complete Technical Sheet**: Deep hardware inspection:
   - **Chassis Color**: Physical housing finish (e.g. `Argent`, `Noir sidéral`, `Gris sidéral`, `Minuit`, `Lumière stellaire`, `Noir`, `Gris`).
   - **Display**: Screen diagonal (calculated from panel mm/EDID, rounded to commercial sizes), native resolution, maximum refresh rate, panel technology (`OLED`, `Liquid Retina XDR`, `mini-LED`, `LCD`), and raw panel model code.
   - **Processor & GPU**: Core layout (performance vs. efficiency cores), dedicated/integrated GPUs, VRAM.
@@ -31,8 +32,8 @@ Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MO
 
 ```text
 USB Stick (exFAT)
-├── SCAN-WINDOWS.cmd               # Quick stock intake for Windows (double-click or Shift+F10)
-├── SCAN-MAC.command               # Quick stock intake for macOS (double-click)
+├── SCAN-WINDOWS.cmd               # 1-Click: Stock intake + full specs + CSV log (Windows / Shift+F10)
+├── SCAN-MAC.command               # 1-Click: Stock intake + full specs + CSV log (macOS)
 ├── LISEZ-MOI.txt                  # French instructions for workshop staff
 ├── settings.txt                   # TechDesk URL and API key configuration
 │
@@ -82,7 +83,11 @@ USB Stick (exFAT)
 
 ## Usage Workflows
 
-### Workflow A: Adding a Laptop to Stock (`SCAN-*`)
+### Primary Workflow: 1-Click Intake (`SCAN-*`)
+
+`SCAN-MAC.command` and `SCAN-WINDOWS.cmd` run **both** actions automatically:
+1. **Part 1**: Ingests the laptop into TechDesk ERP stock (`POST /api/v1/products/scan`).
+2. **Part 2**: Extracts deep hardware specs (color, display, OLED, battery, cycles), appends to `fiche-technique/journal-des-scans.csv`, and attaches the specs to the new product in TechDesk (`POST /api/v1/products/specs`).
 
 #### On Windows:
 - **Brand new laptop on Windows OOBE setup screen** (Region/Wi-Fi selection):
@@ -100,20 +105,17 @@ USB Stick (exFAT)
 | Status Message | Meaning & Action |
 |---|---|
 | `AJOUTÉ AU STOCK` | Successfully added to TechDesk. Bar ID and generated configuration are displayed. |
+| `FICHE AJOUTÉE` | Technical sheet linked directly to the product Bar ID in TechDesk. |
 | `DÉJÀ EN STOCK` | Laptop with this serial number is already in stock. Not duplicated. |
-| `Pas de connexion à TechDesk` | No network connection. Saved to `scans/en-attente/` and sent automatically during the next online scan. |
+| `Pas de connexion à TechDesk` | No network connection. Saved to `scans/en-attente/` and `scans/fiches-en-attente/` and sent automatically during the next online scan. |
 | `TechDesk refuse la clé` | API key invalid or revoked. Check `API_KEY` in `settings.txt`. |
 | `Réglages incomplets` | `settings.txt` still contains example placeholders. |
 
 ---
 
-### Workflow B: Adding the Full Fiche Technique (`FICHE-*`)
+### Secondary Workflow: Standalone Spec Refresh (`FICHE-*`)
 
-The `fiche-technique` tool extracts comprehensive hardware telemetry and sends it to `POST /api/v1/products/specs`. It can be run before or after the stock intake scan:
-- If run **after**: the specs immediately link to the product sheet in TechDesk.
-- If run **before**: TechDesk stores the specs by serial number and associates them automatically once the product is scanned into stock.
-- Running it again on the same laptop updates its record (e.g., re-evaluating battery condition).
-
+If you want to re-evaluate or update the specs of an already scanned laptop (e.g. re-testing battery health before selling) without creating a new stock entry:
 - **Windows**: Double-click `fiche-technique\FICHE-WINDOWS.cmd` (or run `D:\fiche-technique\FICHE-WINDOWS.cmd` via Shift+F10).
 - **Mac**: Double-click `fiche-technique/FICHE-MAC.command`.
 

@@ -1,11 +1,13 @@
-SCANNER USB TECHDESK
-====================
+SCANNER USB TECHDESK (1 SEUL CLIC)
+===================================
 
-Branchez la clé sur un laptop qui vient d'arriver : il est ajouté au stock TechDesk avec ses
-caractéristiques écrites comme d'habitude (ex. "ThinkPad X1 Carbon Gen 12" / "Ultra 7 1re | 32Go | 1To",
-ou "MacBook Pro 14"" / "M4 Pro - 24 Go RAM - 512 Go").
-Les prix d'achat et de vente restent vides, l'état aussi, et le fournisseur est "À définir".
-Dans TechDesk, ces laptops sont marqués en rouge "Prix manquant" jusqu'à ce que vous mettiez les prix.
+Branchez la clé sur un laptop qui vient d'arriver et lancez SCAN-MAC.command (Mac) ou SCAN-WINDOWS.cmd (Windows).
+En 1 SEUL CLIC, le laptop est à la fois :
+1. Ajouté au stock TechDesk avec sa configuration standard (ex. "MacBook Pro 14\"" / "M4 Pro - 24 Go RAM - 512 Go").
+2. Enrichi de sa fiche technique complète (couleur, taille d'écran, OLED, santé batterie en %, cycles...).
+3. Enregistré dans le journal Excel/Numbers sur la clé (fiche-technique/journal-des-scans.csv).
+
+Les prix restent "Prix manquant" en rouge dans TechDesk jusqu'à ce que vous les renseigniez.
 
 
 PRÉPARER LA CLÉ (une seule fois)
@@ -53,17 +55,12 @@ CE QUE VOUS VOYEZ
 
 FICHE TECHNIQUE COMPLÈTE
 ------------------------
-Le dossier fiche-technique relève toutes les caractéristiques du laptop : nom, couleur, écran (taille,
-résolution, OLED ou non), processeur, carte graphique, RAM, stockage, batterie (santé en % et nombre de cycles).
-Il les envoie à TechDesk, qui les affiche sur le produit (Produits > l'œil > Fiche technique). L'écran
-et la batterie s'impriment aussi sous le laptop sur la facture et le reçu.
-Il les note aussi dans fiche-technique\journal-des-scans.csv sur la clé (une ligne par laptop, s'ouvre dans
-Excel ou Numbers).
+Lorsque vous lancez SCAN-MAC.command ou SCAN-WINDOWS.cmd, la fiche technique est déjà enregistrée automatiquement !
+Si vous souhaitez actualiser UNIQUEMENT la fiche technique sans toucher au stock (ex. réévaluer l'état de la batterie) :
    Windows : double-cliquez fiche-technique\FICHE-WINDOWS.cmd
              (écran d'installation : Maj + F10 puis tapez  D:\fiche-technique\FICHE-WINDOWS.cmd )
    Mac     : double-cliquez fiche-technique/FICHE-MAC.command
-Avant ou après le SCAN, peu importe : la fiche va sur le produit qui a le même numéro de série.
-Refaire la FICHE sur le même laptop remplace l'ancienne (par exemple pour la batterie).
+La nouvelle fiche remplace l'ancienne sur le produit ayant le même numéro de série.
 "FICHE AJOUTÉE"       : c'est fait, elle est sur le produit.
 "FICHE ENREGISTRÉE"   : ce laptop n'est pas encore en stock. Lancez le SCAN, la fiche s'y affichera.
 "Pas de connexion"    : la fiche est gardée sur la clé (scans\fiches-en-attente) et partira au prochain envoi.
