@@ -2,3 +2,6 @@
 scans/
 fiche-technique/journal-des-scans.csv
 .DS_Store
+
+# Generated standalone files (contain the API key)
+dist/
