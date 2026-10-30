@@ -12,7 +12,7 @@ Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MO
 
 ## Features
 
-- ⚡ **1-Click All-in-One Execution (`SCAN-*`)**: Run `SCAN-MAC.command` (macOS) or `SCAN-WINDOWS.cmd` (Windows). In a single automated pass, it performs both stock intake and full hardware telemetry logging.
+- ⚡ **1-Click All-in-One Execution (`SCAN-*`)**: Run with a single double-click. Choose between **No-Terminal Native GUI** (`SCAN-MAC.app` on macOS / `SCAN-WINDOWS.vbs` on Windows) with instant completion dialogs, or **Terminal Scripts** (`SCAN-MAC.command` / `SCAN-WINDOWS.cmd`) for real-time console output. In a single automated pass, it performs both stock intake and full hardware telemetry logging.
 - 📦 **Instant Stock Intake**: Reads manufacturer, model, CPU, RAM, storage, GPU, and BIOS/system serial number. Sends the laptop directly to `POST /api/v1/products/scan`. TechDesk normalizes the product name and configuration into the shop's standard format, flagged as **Prix manquant** until pricing is confirmed.
 - 📋 **Complete Technical Sheet**: Deep hardware inspection:
   - **Chassis Color**: Physical housing finish (e.g. `Argent`, `Noir sidéral`, `Gris sidéral`, `Minuit`, `Lumière stellaire`, `Noir`, `Gris`).
@@ -23,7 +23,7 @@ Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MO
   - **Logging & ERP Sync**: Writes directly to `fiche-technique/journal-des-scans.csv` (UTF-8 BOM `;`-separated for Excel/Numbers) and pushes specs to TechDesk (`POST /api/v1/products/specs`).
 - 🔄 **Offline-First Resilience**: If the laptop or shop Wi-Fi has no connection, scans and fiches are queued locally on the USB stick (`scans/en-attente` and `scans/fiches-en-attente`). They automatically sync to TechDesk the moment any subsequent scan runs with internet access.
 - 🪟 **Windows OOBE / Out-of-Box Support**: Scans can run directly during initial Windows setup (Shift+F10 command prompt), keeping new laptops 100% factory-sealed without creating a local user account.
-- 🍎 **Zero-Dependency macOS Script**: Uses only native macOS utilities (`system_profiler`, `sysctl`, `diskutil`, `plutil`, `ioreg`, `osascript`). No Homebrew, Python, or external packages required.
+- 🍎 **Zero-Dependency Native Execution**: macOS runs via built-in `applet` or bash, using only native system utilities (`system_profiler`, `sysctl`, `diskutil`, `plutil`, `ioreg`, `osascript`). Windows runs via built-in `wscript.exe` and PowerShell 5.1. No third-party tools required.
 - 🔒 **Restricted Security Scope**: Uses a dedicated **USB scanner** API key (`smk_…`) that can only add new products and specs. It cannot read existing inventory, view financial metrics, or alter prices. If a stick is lost, its key can be instantly revoked from TechDesk.
 
 ---
@@ -32,8 +32,10 @@ Instructions for shop staff (in French) are provided in [LISEZ-MOI.txt](LISEZ-MO
 
 ```text
 USB Stick (exFAT)
-├── SCAN-WINDOWS.cmd               # 1-Click: Stock intake + full specs + CSV log (Windows / Shift+F10)
-├── SCAN-MAC.command               # 1-Click: Stock intake + full specs + CSV log (macOS)
+├── SCAN-WINDOWS.vbs               # 1-Click: No-terminal GUI popup (Windows)
+├── SCAN-WINDOWS.cmd               # 1-Click: Console window (Windows / Shift+F10 OOBE)
+├── SCAN-MAC.app                   # 1-Click: No-terminal native GUI dialog (macOS)
+├── SCAN-MAC.command               # 1-Click: Terminal window (macOS)
 ├── LISEZ-MOI.txt                  # French instructions for workshop staff
 ├── settings.txt                   # TechDesk URL and API key configuration
 │
@@ -42,8 +44,10 @@ USB Stick (exFAT)
 │   └── scan-mac.sh                # macOS bash 3.2 intake script
 │
 ├── fiche-technique/               # Full technical specification engine
-│   ├── FICHE-WINDOWS.cmd          # Spec intake launcher for Windows
-│   ├── FICHE-MAC.command          # Spec intake launcher for macOS
+│   ├── FICHE-WINDOWS.vbs          # Spec intake without terminal (Windows)
+│   ├── FICHE-WINDOWS.cmd          # Spec intake launcher with console (Windows)
+│   ├── FICHE-MAC.app              # Spec intake without terminal (macOS)
+│   ├── FICHE-MAC.command          # Spec intake launcher with terminal (macOS)
 │   ├── journal-des-scans.csv      # Local CSV log (created on first run)
 │   └── outils/
 │       ├── fiche-windows.ps1      # PowerShell EDID/CIM spec extractor
@@ -85,23 +89,24 @@ USB Stick (exFAT)
 
 ### Primary Workflow: 1-Click Intake (`SCAN-*`)
 
-`SCAN-MAC.command` and `SCAN-WINDOWS.cmd` run **both** actions automatically:
+Both actions are executed automatically in a single pass:
 1. **Part 1**: Ingests the laptop into TechDesk ERP stock (`POST /api/v1/products/scan`).
 2. **Part 2**: Extracts deep hardware specs (color, display, OLED, battery, cycles), appends to `fiche-technique/journal-des-scans.csv`, and attaches the specs to the new product in TechDesk (`POST /api/v1/products/specs`).
 
 #### On Windows:
+- **No-Terminal 1-Click (Recommended)**: Double-click `SCAN-WINDOWS.vbs` in File Explorer. It executes silently with **zero console window** and shows a native graphical pop-up upon completion.
+- **Terminal Console**: Double-click `SCAN-WINDOWS.cmd`.
 - **Brand new laptop on Windows OOBE setup screen** (Region/Wi-Fi selection):
   1. Plug in the USB stick.
   2. Press <kbd>Shift</kbd> + <kbd>F10</kbd> (or <kbd>Shift</kbd> + <kbd>Fn</kbd> + <kbd>F10</kbd>). A Command Prompt opens.
   3. Run `D:\SCAN-WINDOWS.cmd` (or try `E:\`, `F:\` depending on drive letter).
   4. Once complete, close the prompt window. The laptop remains brand new in its factory setup state.
-- **Configured Windows laptop**: Open the USB drive and double-click `SCAN-WINDOWS.cmd`.
 
 #### On Mac:
-1. Plug in the USB stick.
-2. Double-click `SCAN-MAC.command` in Finder (if prompted by Gatekeeper, right-click → **Open**).
+- **No-Terminal 1-Click (Recommended)**: Double-click `SCAN-MAC.app` in Finder. It runs in the background and presents a native macOS completion dialog with hardware breakdown.
+- **Terminal Console**: Double-click `SCAN-MAC.command`.
 
-#### Terminal Feedback:
+#### Status Feedback:
 | Status Message | Meaning & Action |
 |---|---|
 | `AJOUTÉ AU STOCK` | Successfully added to TechDesk. Bar ID and generated configuration are displayed. |
@@ -116,8 +121,8 @@ USB Stick (exFAT)
 ### Secondary Workflow: Standalone Spec Refresh (`FICHE-*`)
 
 If you want to re-evaluate or update the specs of an already scanned laptop (e.g. re-testing battery health before selling) without creating a new stock entry:
-- **Windows**: Double-click `fiche-technique\FICHE-WINDOWS.cmd` (or run `D:\fiche-technique\FICHE-WINDOWS.cmd` via Shift+F10).
-- **Mac**: Double-click `fiche-technique/FICHE-MAC.command`.
+- **Windows**: Double-click `fiche-technique\FICHE-WINDOWS.vbs` (no terminal) or `FICHE-WINDOWS.cmd` (console / Shift+F10).
+- **Mac**: Double-click `fiche-technique/FICHE-MAC.app` (no terminal) or `FICHE-MAC.command` (terminal).
 
 #### Telemetry Extraction Details
 

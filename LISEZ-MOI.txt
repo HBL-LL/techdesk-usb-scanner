@@ -1,7 +1,9 @@
 SCANNER USB TECHDESK (1 SEUL CLIC)
 ===================================
 
-Branchez la clé sur un laptop qui vient d'arriver et lancez SCAN-MAC.command (Mac) ou SCAN-WINDOWS.cmd (Windows).
+Branchez la clé sur un laptop qui vient d'arriver et lancez en 1 CLIC :
+  • Sur Mac     : SCAN-MAC.app (sans terminal, boîte de dialogue native) ou SCAN-MAC.command
+  • Sur Windows : SCAN-WINDOWS.vbs (sans terminal, boîte de dialogue native) ou SCAN-WINDOWS.cmd
 En 1 SEUL CLIC, le laptop est à la fois :
 1. Ajouté au stock TechDesk avec sa configuration standard (ex. "MacBook Pro 14\"" / "M4 Pro - 24 Go RAM - 512 Go").
 2. Enrichi de sa fiche technique complète (couleur, taille d'écran, OLED, santé batterie en %, cycles...).
@@ -33,14 +35,16 @@ A) Laptop neuf, encore sur l'écran d'installation de Windows (choix du pays, du
    Astuce : connectez le Wi-Fi sur l'écran d'installation avant, sinon le scan part plus tard (voir plus bas).
 
 B) Windows déjà installé :
-   Ouvrez la clé et double-cliquez SCAN-WINDOWS.cmd.
+   Ouvrez la clé et double-cliquez SCAN-WINDOWS.vbs (1 clic sans terminal, boîte de dialogue à la fin)
+   ou SCAN-WINDOWS.cmd (avec terminal).
 
 
 SUR UN MAC
 ----------
 Le Mac doit avoir fini son installation (l'écran d'accueil "Bonjour" ne permet pas de lancer le scan).
    1. Branchez la clé et ouvrez-la dans le Finder.
-   2. Double-cliquez SCAN-MAC.command.
+   2. Double-cliquez SCAN-MAC.app (1 clic sans terminal, boîte de dialogue avec résumé complet).
+      Vous pouvez aussi utiliser SCAN-MAC.command (avec terminal).
       Si le Mac dit qu'il ne peut pas l'ouvrir : clic droit > Ouvrir > Ouvrir.
 
 
@@ -55,11 +59,11 @@ CE QUE VOUS VOYEZ
 
 FICHE TECHNIQUE COMPLÈTE
 ------------------------
-Lorsque vous lancez SCAN-MAC.command ou SCAN-WINDOWS.cmd, la fiche technique est déjà enregistrée automatiquement !
+Lorsque vous lancez SCAN-MAC ou SCAN-WINDOWS, la fiche technique est déjà enregistrée automatiquement !
 Si vous souhaitez actualiser UNIQUEMENT la fiche technique sans toucher au stock (ex. réévaluer l'état de la batterie) :
-   Windows : double-cliquez fiche-technique\FICHE-WINDOWS.cmd
+   Windows : double-cliquez fiche-technique\FICHE-WINDOWS.vbs (sans terminal) ou FICHE-WINDOWS.cmd
              (écran d'installation : Maj + F10 puis tapez  D:\fiche-technique\FICHE-WINDOWS.cmd )
-   Mac     : double-cliquez fiche-technique/FICHE-MAC.command
+   Mac     : double-cliquez fiche-technique/FICHE-MAC.app (sans terminal) ou FICHE-MAC.command
 La nouvelle fiche remplace l'ancienne sur le produit ayant le même numéro de série.
 "FICHE AJOUTÉE"       : c'est fait, elle est sur le produit.
 "FICHE ENREGISTRÉE"   : ce laptop n'est pas encore en stock. Lancez le SCAN, la fiche s'y affichera.

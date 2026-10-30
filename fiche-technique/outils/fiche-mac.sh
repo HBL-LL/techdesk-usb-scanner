@@ -85,7 +85,7 @@ while GNAME="$(px "0._items.$g.sppci_model")" && [ -n "$GNAME" ]; do
     if [ "$(px "$P.spdisplays_connection_type")" = spdisplays_internal ] || case "$KIND" in *built*) true ;; *) false ;; esac; then
       DTYPE="$KIND"
       HZ="$(px "$P._spdisplays_resolution" | sed -n 's/.*@ *\([0-9]*\).*/\1/p')"
-      RES="$(px "$P._spdisplays_pixels" | tr -d ' ')${HZ:+ @ $HZ Hz}"
+      RES="$(px "$P._spdisplays_pixels" | tr -d ' ')${HZ:+ - $HZ Hz}"
     fi
     d=$((d + 1))
   done
